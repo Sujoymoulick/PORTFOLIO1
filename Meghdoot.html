@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Weather App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            'periwinkle': '#a9b7ff',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #10172A, #050812);
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: #fff;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .input-glow {
+      border: 2px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-glow:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+      outline: none;
+    }
+
+    .button-glow {
+      box-shadow: 0 0 10px rgba(169, 183, 255, 0.5);
+    }
+
+    .icon {
+      width: 96px;
+      height: 96px;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 1rem;
+      }
+
+      .icon {
+        width: 72px;
+        height: 72px;
+      }
+    }
+  </style>
+</head>
+
+<body class="p-4">
+
+  <!-- Navbar -->
+  <nav class="w-full max-w-4xl mx-auto flex items-center justify-between py-4">
+    <div class="flex items-center space-x-2">
+      <!-- App Logo -->
+      <img src="SwirlLogoremovebg.png" alt="Meghdoot Logo" class="w-8 h-8 rounded-full">
+      <h1 class="text-2xl font-bold tracking-wide">MEGHDOOT</h1>
+    </div>
+    <a href="https://github.com/Sujoymoulick/MEGHDOOT" target="_blank"
+      class="py-2 px-4 bg-white/30 rounded-full font-medium transition hover:bg-white/40">
+      <span class="hidden sm:inline">GitHub Repo</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 sm:hidden">
+        <path fill-rule="evenodd"
+          d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.875 16.5a.75.75 0 00.75-.75v-2.25a.75.75 0 00-.75-.75H12a2.25 2.25 0 01-2.25-2.25V9a2.25 2.25 0 012.25-2.25h2.25a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-2.25a3.75 3.75 0 00-3.75 3.75v6A3.75 3.75 0 0012 18.75h4.875z"
+          clip-rule="evenodd" />
+      </svg>
+    </a>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="w-full max-w-4xl space-y-6 mx-auto flex flex-col pt-8">
+
+    <!-- Search and Main Weather Card Wrapper -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- Search bar -->
+      <div class="md:col-span-1 flex items-center justify-center">
+        <form id="searchForm" class="relative w-full">
+          <input id="locationInput" type="text" placeholder="Search a city..."
+            class="w-full p-4 pl-12 rounded-full bg-white/30 text-white placeholder-white/80 input-glow" required>
+          <button type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/80 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Main Weather Card -->
+      <div class="md:col-span-2 card flex flex-col items-center justify-center p-8 text-center relative">
+        <div id="loading" class="absolute inset-0 flex items-center justify-center bg-white/20 rounded-2xl z-10 hidden">
+          <svg class="animate-spin h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+        </div>
+        <div class="flex-grow">
+          <h2 id="location" class="text-3xl font-bold">Loading...</h2>
+          <p id="date" class="text-sm font-medium opacity-80 mt-1">--</p>
+          <div class="flex flex-col items-center justify-center mt-4">
+            <img id="weather-icon" src="https://cdn-icons-png.flaticon.com/512/1163/1163624.png" alt="Weather Icon"
+              class="icon">
+            <h1 id="temperature" class="text-6xl font-extrabold mt-2">--°</h1>
+            <p id="condition" class="text-xl font-medium opacity-90">--</p>
+          </div>
+        </div>
+
+        <div class="flex justify-around w-full mt-6 text-sm sm:text-base font-semibold">
+          <div class="flex flex-col items-center">
+            <p id="rain" class="text-lg">-- mm</p>
+            <p class="text-xs font-normal opacity-70 mt-1">Rain</p>
+          </div>
+          <div class="flex flex-col items-center">
+            <p id="wind" class="text-lg">-- km/h</p>
+            <p class="text-xs font-normal opacity-70 mt-1">Wind</p>
+          </div>
+          <div class="flex flex-col items-center">
+            <p id="humidity" class="text-lg">--%</p>
+            <p class="text-xs font-normal opacity-70 mt-1">Humidity</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hourly Forecast Card -->
+    <div class="card p-6 md:p-8">
+      <h3 class="text-xl font-semibold mb-4">Hourly Forecast</h3>
+      <div id="hourly-forecast" class="flex overflow-x-auto gap-4 py-2 scrollbar-hide">
+        <!-- Hourly items will be injected here by JS -->
+      </div>
+    </div>
+
+    <!-- Weekly Forecast Card -->
+    <div class="card p-6 md:p-8">
+      <h3 class="text-xl font-semibold mb-4">7-Day Forecast</h3>
+      <div id="weekly-forecast" class="space-y-4">
+        <!-- Weekly forecast items will be injected here by JS -->
+      </div>
+    </div>
+    <div class="flex-grow"></div>
+  </div>
+
+  <!-- Copyright Footer -->
+  <footer class="mt-8 text-center text-white text-sm opacity-60">
+    &copy; 2024 Professional Weather App. All Rights Reserved.
+  </footer>
+
+  <script>
+    const API_KEY = "c5abd3e17c0d46609e761420252509"; // Placeholder API key
+    const API_URL = "https://api.weatherapi.com/v1/forecast.json";
+    const locationInput = document.getElementById("locationInput");
+    const searchForm = document.getElementById("searchForm");
+    const loadingSpinner = document.getElementById("loading");
+
+    // Helper function to show/hide loading spinner
+    const toggleLoading = (show) => {
+      loadingSpinner.classList.toggle('hidden', !show);
+    };
+
+    // Helper function to display error messages
+    const displayError = (message) => {
+      document.getElementById("location").innerText = message;
+      document.getElementById("temperature").innerText = "--°";
+      document.getElementById("condition").innerText = "--";
+      document.getElementById("rain").innerText = "-- mm";
+      document.getElementById("wind").innerText = "-- km/h";
+      document.getElementById("humidity").innerText = "--%";
+      document.getElementById("date").innerText = "--";
+      document.getElementById("weather-icon").src = "";
+      document.getElementById("hourly-forecast").innerHTML = "";
+      document.getElementById("weekly-forecast").innerHTML = "";
+    };
+
+    // Function to update the main weather card
+    const updateMainWeather = (data) => {
+      const current = data.current;
+      const location = data.location;
+
+      document.getElementById("location").innerText = location.name + ", " + location.country;
+      document.getElementById("temperature").innerText = Math.round(current.temp_c) + "°";
+      document.getElementById("condition").innerText = current.condition.text;
+      document.getElementById("rain").innerText = current.precip_mm + " mm";
+      document.getElementById("wind").innerText = current.wind_kph + " km/h";
+      document.getElementById("humidity").innerText = current.humidity + "%";
+      document.getElementById("date").innerText = new Date(location.localtime).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      document.getElementById("weather-icon").src = "https:" + current.condition.icon.replace("64x64", "128x128");
+    };
+
+    // Function to update the hourly forecast section
+    const updateHourlyForecast = (hourlyData) => {
+      const hourlyContainer = document.getElementById("hourly-forecast");
+      hourlyContainer.innerHTML = "";
+      const currentHour = new Date().getHours();
+
+      // Display 8 hours starting from the current hour
+      for (let i = 0; i < 8; i++) {
+        const hourIndex = (currentHour + i) % 24;
+        const hour = hourlyData[hourIndex];
+        const time = new Date(hour.time).toLocaleTimeString('en-US', { hour: 'numeric' });
+        const icon = "https:" + hour.condition.icon.replace("64x64", "128x128");
+
+        const itemHtml = `
+                    <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-white/20 min-w-[70px] text-center">
+                        <p class="text-xs font-semibold">${time}</p>
+                        <img src="${icon}" alt="${hour.condition.text}" class="w-10 h-10 my-1">
+                        <p class="text-sm font-bold">${Math.round(hour.temp_c)}°</p>
+                    </div>
+                `;
+        hourlyContainer.innerHTML += itemHtml;
+      }
+    };
+
+    // Function to update the weekly forecast section
+    const updateWeeklyForecast = (weeklyData) => {
+      const weeklyContainer = document.getElementById("weekly-forecast");
+      weeklyContainer.innerHTML = "";
+
+      weeklyData.forEach(day => {
+        const date = new Date(day.date);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+        const icon = "https:" + day.day.condition.icon.replace("64x64", "128x128");
+        const tempMax = Math.round(day.day.maxtemp_c);
+        const tempMin = Math.round(day.day.mintemp_c);
+        const condition = day.day.condition.text;
+
+        const itemHtml = `
+                    <div class="flex justify-between items-center bg-white/10 p-4 rounded-xl">
+                        <div class="flex items-center space-x-4">
+                            <img src="${icon}" alt="${condition}" class="w-12 h-12">
+                            <div>
+                                <p class="font-semibold">${dayName}</p>
+                                <p class="text-sm opacity-80">${condition}</p>
+                            </div>
+                        </div>
+                        <p class="text-xl font-semibold">${tempMax}° / ${tempMin}°</p>
+                    </div>
+                `;
+        weeklyContainer.innerHTML += itemHtml;
+      });
+    };
+
+    // Main function to fetch all weather data
+    const fetchWeather = async (location = "London") => {
+      toggleLoading(true);
+      try {
+        const url = `${API_URL}?key=${API_KEY}&q=${location}&days=7`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.error) {
+          displayError("Location not found!");
+          return;
+        }
+
+        updateMainWeather(data);
+        updateHourlyForecast(data.forecast.forecastday[0].hour);
+        updateWeeklyForecast(data.forecast.forecastday);
+
+      } catch (error) {
+        console.error("Failed to fetch weather data:", error);
+        displayError("Failed to fetch data.");
+      } finally {
+        toggleLoading(false);
+      }
+    };
+
+    // Event listener for the search form
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const location = locationInput.value.trim();
+      if (location) {
+        fetchWeather(location);
+      }
+    });
+
+    // Initial load on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchWeather("London");
+    });
+  </script>
+</body>
+
+</html>
